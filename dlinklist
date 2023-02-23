@@ -36,6 +36,7 @@ class DoublyLinkedList:
         newitem = DoublyLinkedList.Node(item)
         newitem.prev = self.head
         newitem.next = self.head.next
+        newitem.next.prev = newitem
         self.head.next = newitem
         self.length += 1
 
@@ -116,13 +117,17 @@ class DoublyLinkedList:
         self.cursor.next.prev = newitem
         self.cursor.next = newitem
         self.cursor = self.cursor.next
+        self.length += 1
 
     def cursor_delete(self):
         assert self.cursor is not self.head and len(self) > 0
         # Delete the cursor node and let cursor.next be the new cursor.
         # Remember to decrease the length of this DoublyLinkedList.
         # Don't return anything in this method.
-        pass
+        self.cursor.next.prev = self.cursor.prev
+        self.cursor.prev.next = self.cursor.next
+        self.cursor = self.cursor.next
+        self.length -= 1
 
     def __contains__(self, item):
         # This method implements "item in DoublyLinkedList" as a Boolean.
@@ -140,7 +145,10 @@ class DoublyLinkedList:
         # Make sure that all the pointers are pointing to the correct nodes.
         # Remember to change the self.length of the updated DoublyLinkedList accordingly.
         # Don't return anything in this method, the head of the updated DoublyLinkedList is still self.head.
-        pass
+        i = other.head.next
+        while i.data != None:
+            self.append(i.data)
+            i = i.next
 
     def remove_items(self, item):
         # Remove each node in this DoublyLinkedList containing the input item as its data.
@@ -150,11 +158,11 @@ class DoublyLinkedList:
         i = self.head.next
         while i.data != None:
             if i.data == item:
-                (i.prev).next = i.next
-                (i.next).prev = i.prev
+                i.next.prev = i.prev
+                i.prev.next = i.next
                 self.length -= 1
             i = i.next
-        i = None
+            
 
     def reverse_list(self):
         # Reverse the order of nodes in this DoublyLinkedList.
@@ -162,7 +170,15 @@ class DoublyLinkedList:
         # after reverse_list(), you need to update it to  SH <-> 5 <-> 3 <-> 1.
         # Here, SH means the sentinel head.
         # Since you are updating this list, don't return anything in this method.
-        pass
+        temp = None
+        current = self.head.next
+        while current.data != None:
+            temp = current.prev
+            current.prev = current.next
+            current.next = temp
+            current = current.prev
+        if temp.data != None:
+            self.head.next = temp.prev
 
 
 ########################################################################################################################
@@ -171,17 +187,16 @@ class DoublyLinkedList:
 ######################################                                      ############################################
 ########################################################################################################################
 list1 = DoublyLinkedList()
-for x in range(1,5):
+for x in range(1, 5):
     list1.append(x)
 print("Let's start with a list consists of the first four positive integers: list1 =", list1,
       ", and its length =", list1.length, "." )
-
 for x in range(4,8):
     list1.prepend(x)
 print("Then we prepend integers 7,6,5,4 to the front, and list1 =", list1, ", and its length =", list1.length, ".")
 
-# list1.remove_items(4)
-# print("After removing all 4's from list1, we get list1 =", list1, ", and its length =", list1.length, ".")
+list1.remove_items(4)
+print("After removing all 4's from list1, we get list1 =", list1, ", and its length =", list1.length, ".")
 
 list1[3] = 8
 print("Let's update number 1 in list1 to 8, and we get list1 =",
@@ -210,4 +225,3 @@ print("If we add list1 to the tail of list2, the new list2 =", list2, ", and its
 
 list2.reverse_list()
 print("Let's reverse the order of numbers in list2, we get list2 =", list2, ".")
-
