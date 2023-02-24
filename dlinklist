@@ -132,10 +132,11 @@ class DoublyLinkedList:
     def __contains__(self, item):
         # This method implements "item in DoublyLinkedList" as a Boolean.
         # Return True if item is in this DoublyLinkedList, or else return False.
-        iter(self)
-        for i in self:
-            if i == item:
+        i = self.head.next
+        while i.data != None:
+            if i.data == item:
                 return True
+            i = i.next
         return False
 
     def __add__(self, other):
